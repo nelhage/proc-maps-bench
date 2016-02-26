@@ -42,7 +42,7 @@ DEFINE_string(map_file, options.file, "File to mmap() and access");
 DEFINE_string(out, options.stats_file, "Path to write timing statistics");
 DEFINE_uint64(gb, options.file_size >> 30, "Map file size, in GiB");
 
-DEFINE_bool(populate, options.populate,
+DEFINE_bool(populate, !!options.populate,
             "Pre-populate the map file, don't just ftruncate()");
 
 DEFINE_int32(threads, options.nthreads, "Number of idle threads");
