@@ -25,8 +25,10 @@ tmin = data[0].start
 
 for k,v in bypid.items():
   xs = [(p.start - tmin)/(1000*1000) for p in v]
-  ys = [p.avg for p in v]
-  plt.scatter(xs, ys, marker='x')
+  ys = [p.p90 for p in v]
+  plt.scatter(xs, ys, marker='x', c='blue')
+  ys = [p.p99 for p in v]
+  plt.scatter(xs, ys, marker='x', c='red')
 
 plt.ylabel(u'read time (µs)')
 plt.xlabel('seconds')
