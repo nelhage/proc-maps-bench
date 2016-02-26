@@ -5,12 +5,18 @@
 #include <stdint.h>
 #include <sys/time.h>
 
+#include <gflags/gflags.h>
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include <vector>
+#include <string>
 #include <algorithm>
+
+using std::vector;
+using std::string;
 
 static struct {
   const char *file;
@@ -32,7 +38,18 @@ static struct {
     .runtime = 60,
 };
 
-using std::vector;
+DEFINE_string(map_file, options.file, "File to mmap() and access");
+DEFINE_string(out, options.stats_file, "Path to write timing statistics");
+DEFINE_uint64(gb, options.file_size >> 30, "Map file size, in GiB");
+
+DEFINE_bool(populate, options.populate,
+            "Pre-populate the map file, don't just ftruncate()");
+
+DEFINE_int32(threads, options.nthreads, "Number of idle threads");
+DEFINE_int32(readers, options.nreaders, "Number of reader threads");
+DEFINE_int32(mappers, options.nmappers, "Number of mappers threads");
+
+DEFINE_int32(time, options.runtime, "Seconds to run");
 
 const int kWindow = 1000;
 const int kWindowUS = 1000 * 1000;
@@ -170,6 +187,21 @@ void *dommap(void *) {
 }
 
 int main(int argc, char **argv) {
+  google::SetUsageMessage("Usage: " + string(argv[0]) + "<options>");
+  google::ParseCommandLineFlags(&argc, &argv, true);
+
+  options.file = FLAGS_map_file.c_str();
+  options.stats_file = FLAGS_out.c_str();
+  options.file_size = FLAGS_gb << 30;
+
+  options.populate = FLAGS_populate;
+
+  options.nthreads = FLAGS_threads;
+  options.nreaders = FLAGS_readers;
+  options.nmappers = FLAGS_mappers;
+
+  options.runtime = FLAGS_time;
+
   int fd = open(options.file, O_RDWR | O_CREAT, 0644);
   if (fd < 0) {
     panic("open");
