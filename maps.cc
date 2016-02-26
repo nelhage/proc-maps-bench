@@ -219,6 +219,7 @@ int main(int argc, char **argv) {
   void *map = mmap(NULL, options.file_size, PROT_READ, MAP_SHARED, fd, 0);
   if (map == (void *)MAP_FAILED)
     panic("mmap");
+  madvise(map, options.file_size, MADV_RANDOM);
 
   printf("launching threads...\n");
   for (int i = 0; i < options.nthreads; ++i) {
