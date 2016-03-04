@@ -72,7 +72,7 @@ public:
 
   void flush() {
     window w;
-    std::sort(&samples_[0], &samples_[sample_ - 1]);
+    std::sort(&samples_[0], &samples_[sample_]);
     uint64_t sum = 0;
     for (int i = 0; i < sample_; ++i)
       sum += samples_[i];
